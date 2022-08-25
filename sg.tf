@@ -1,14 +1,14 @@
 resource "aws_security_group" "alb_public" {
-  name        = "roboshop-mongodb-${var.ENV}"
-  description = "roboshop-mongodb-${var.ENV}"
+  name        = "roboshop-public-alb-${var.ENV}"
+  description = "roboshop-public-alb-${var.ENV}"
   vpc_id      = data.terraform_remote_state.vpc.outputs.VPC_ID
 
   ingress {
-    description      = "TLS from VPC"
-    from_port        = var.DOCTDB_PORT
-    to_port          = var.DOCTDB_PORT
+    description      = "HTTP"
+    from_port        = 80
+    to_port          = 80
     protocol         = "tcp"
-    cidr_blocks      = [data.terraform_remote_state.vpc.outputs.VPC_CIDR, var.WORKSTATION_IP]
+    cidr_blocks      = ["0.0.0.0/0"]
   }
 
   egress {
@@ -20,6 +20,32 @@ resource "aws_security_group" "alb_public" {
   }
 
   tags = {
-    Name = "roboshop-mongodb-${var.ENV}"
+    Name = "roboshop-public-alb-${var.ENV}"
+  }
+}
+
+resource "aws_security_group" "alb_private" {
+  name        = "roboshop-private-alb-${var.ENV}"
+  description = "roboshop-private-alb-${var.ENV}"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.VPC_ID
+
+  ingress {
+    description      = "HTTP"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "roboshop-public-alb-${var.ENV}"
   }
 }
