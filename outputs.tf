@@ -3,5 +3,5 @@ output "ALB_ARN" {
 }
 
 output "LISTNER_ARN" {
-  value = aws_lb_listener.private.*.arn[0]
+  value = aws_lb_listener.private.*.arn
 }
